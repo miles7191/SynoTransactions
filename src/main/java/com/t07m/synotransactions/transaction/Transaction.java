@@ -13,27 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.t07m.synotransactions;
+package com.t07m.synotransactions.transaction;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import com.t07m.synotransactions.SurveillanceStation;
+
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public class Transaction {
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+public abstract class Transaction {
 
-	public enum Format{String, Json};
+	private static ExecutorService es = Executors.newFixedThreadPool(Math.min(Runtime.getRuntime().availableProcessors(), 4));
 	
-	private final @Getter String[] data;
+	public enum Format{String, Json};
+
 	private final @Getter Format format;
-	private final @Getter int timestamp;
+	private final @Getter int timeStamp;
 	private final @Getter String deviceName;
 	
-	public Transaction(String deviceName, Format format, String... data) {
-		this(deviceName, -1, format, data);
+	private final @Getter(AccessLevel.PROTECTED) SurveillanceStation surveillanceStation;
+	private boolean threadQueued ;
+
+	private Thread thread = new Thread() {
+		public void run() {
+			process();
+		}
+	};
+	
+	synchronized final void invokeThread() {
+		if(!threadQueued) {
+			es.submit(thread);
+			threadQueued = true;
+		}
 	}
 	
-	public Transaction(String deviceName, int timestamp, Format format, String... data) {
-		this.deviceName = deviceName;
-		this.data = data;
-		this.timestamp = timestamp;
-		this.format = format;
+	abstract void process();
+
+	public void cleanup() {
+		es.shutdown();
+		try {
+			es.awaitTermination(5, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {}
 	}
+	
 }

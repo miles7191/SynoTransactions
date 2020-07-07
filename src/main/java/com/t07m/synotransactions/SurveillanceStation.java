@@ -34,28 +34,45 @@ public class SurveillanceStation {
 	
 	private DsmConnection dsmConnection;
 	
-	private SurveillanceStationTransactions getSST() {
+	private SurveillanceStationTransactions getTransactions() {
 		if(dsmConnection == null) {
 			dsmConnection = new DsmConnection(host, port, useSSL, true);
 		}
 		return dsmConnection.getWebApi().getSurveillanceStation().getTransactions();
 	}
 	
-	public boolean submitTransaction(Transaction trans) {
-		SurveillanceStationTransactions sst = getSST();
-		if(trans.getFormat() == Transaction.Format.Json) {
-			try {
-				return sst.insert(dsName, trans.getDeviceName(), String.join("",trans.getData()), "json", trans.getTimestamp(), username, password);
-			} catch (IOException | URISyntaxException e) {
-				return false;
-			}
-		}else if(trans.getFormat() == Transaction.Format.String) {
-			try {
-				return sst.insert(dsName, trans.getDeviceName(), String.join("\n",trans.getData()), "string", trans.getTimestamp(), username, password);
-			} catch (IOException | URISyntaxException e) {
-				return false;
-			}
-		}
+	public boolean insertTransaction(String deviceName, String content, String format, int timestamp) {
+		try {
+			return getTransactions().insert(dsName, deviceName, content, format, timestamp, username, password);
+		} catch (IOException | URISyntaxException e) {}
+		return false;
+	}
+	
+	public boolean beginTransaction(String deviceName, String sessionId, int timeout, int timestamp) {
+		try {
+			return getTransactions().begin(dsName, deviceName, sessionId, timeout, timestamp, username, password);
+		} catch (IOException | URISyntaxException e) {}
+		return false;
+	}
+	
+	public boolean completeTransaction(String deviceName, String sessionId, int timestamp) {
+		try {
+			return getTransactions().complete(dsName, deviceName, sessionId, timestamp, username, password);
+		} catch (IOException | URISyntaxException e) {}
+		return false;
+	}
+	
+	public boolean cancelTransaction(String deviceName, String sessionId, int timestamp) {
+		try {
+			return getTransactions().cancel(dsName, deviceName, sessionId, timestamp, username, password);
+		} catch (IOException | URISyntaxException e) {}
+		return false;
+	}
+	
+	public boolean appendTransaction(String deviceName, String sessionId, String content, int timestamp) {
+		try {
+			return getTransactions().appendData(dsName, deviceName, sessionId, content, timestamp, username, password);
+		} catch (IOException | URISyntaxException e) {}
 		return false;
 	}
 	
