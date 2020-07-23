@@ -15,11 +15,11 @@
  */
 package com.t07m.synotransactions.transaction;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import com.t07m.synotransactions.SurveillanceStation;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,19 +36,23 @@ public abstract class Transaction {
 	private final @Getter int timeStamp;
 	private final @Getter String deviceName;
 	
-	private final @Getter(AccessLevel.PROTECTED) SurveillanceStation surveillanceStation;
-	private boolean threadQueued ;
+	private final @Getter(AccessLevel.PROTECTED) TransactionFactory transactionFactory;
+	
+	protected @Getter boolean submiting;
+	protected @Getter boolean submited;
+	protected @Getter boolean completed;
 
 	private Thread thread = new Thread() {
 		public void run() {
 			process();
+			submiting = false;
 		}
 	};
 	
 	synchronized final void invokeThread() {
-		if(!threadQueued) {
+		if(!submiting) {
 			es.submit(thread);
-			threadQueued = true;
+			submiting = true;
 		}
 	}
 	
@@ -59,6 +63,76 @@ public abstract class Transaction {
 		try {
 			es.awaitTermination(5, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {}
+	}
+	
+	public boolean insertTransaction(String deviceName, String content, Format format, int timestamp) {
+		try {
+			return getTransactionFactory().getTransactions().insert(
+					getTransactionFactory().getDsName(), 
+					deviceName, 
+					content, 
+					format.toString().toLowerCase(), 
+					timestamp, 
+					getTransactionFactory().getUsername(), 
+					getTransactionFactory().getPassword());
+		} catch (IOException | URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean beginTransaction(String deviceName, String sessionId, int timeout, int timestamp) {
+		try {
+			return getTransactionFactory().getTransactions().begin(
+					getTransactionFactory().getDsName(), 
+					deviceName, 
+					sessionId, 
+					timeout, 
+					timestamp, 
+					getTransactionFactory().getUsername(), 
+					getTransactionFactory().getPassword());
+		} catch (IOException | URISyntaxException e) {}
+		return false;
+	}
+	
+	public boolean completeTransaction(String deviceName, String sessionId, int timestamp) {
+		try {
+			return getTransactionFactory().getTransactions().complete(
+					getTransactionFactory().getDsName(), 
+					deviceName, 
+					sessionId, 
+					timestamp, 
+					getTransactionFactory().getUsername(), 
+					getTransactionFactory().getPassword());
+		} catch (IOException | URISyntaxException e) {}
+		return false;
+	}
+	
+	public boolean cancelTransaction(String deviceName, String sessionId, int timestamp) {
+		try {
+			return getTransactionFactory().getTransactions().cancel(
+					getTransactionFactory().getDsName(), 
+					deviceName, 
+					sessionId, 
+					timestamp, 
+					getTransactionFactory().getUsername(), 
+					getTransactionFactory().getPassword());
+		} catch (IOException | URISyntaxException e) {}
+		return false;
+	}
+	
+	public boolean appendTransaction(String deviceName, String sessionId, String content, int timestamp) {
+		try {
+			return getTransactionFactory().getTransactions().appendData(
+					getTransactionFactory().getDsName(), 
+					deviceName, 
+					sessionId, 
+					content, 
+					timestamp, 
+					getTransactionFactory().getUsername(), 
+					getTransactionFactory().getPassword());
+		} catch (IOException | URISyntaxException e) {}
+		return false;
 	}
 	
 }

@@ -15,14 +15,44 @@
  */
 package com.t07m.synotransactions.transaction;
 
-import com.t07m.synotransactions.SurveillanceStation;
+import com.t07m.synology.dsmclient.DsmConnection;
+import com.t07m.synology.dsmclient.webapi.SurveillanceStationTransactions;
+import com.t07m.synotransactions.transaction.Transaction.Format;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class TransactionFactory {
 
-	private final SurveillanceStation surveillancStation;
+	private final @Getter String host;
+	private final @Getter int port;
+	private final @Getter boolean useSSL;
+	private final @Getter String dsName, username, password;
 	
+	private DsmConnection dsmConnection;
+	
+	SurveillanceStationTransactions getTransactions() {
+		if(dsmConnection == null) {
+			dsmConnection = new DsmConnection(host, port, useSSL, true);
+		}
+		return dsmConnection.getWebApi().getSurveillanceStation().getTransactions();
+	}
+	
+	public CompletedTransaction submitTransaction(String[] data, Format format, String deviceName) {
+		return submitTransaction(data, format, (int)(System.currentTimeMillis()/1000), deviceName);
+	}
+	
+	public CompletedTransaction submitTransaction(String[] data, Format format, int timestamp, String deviceName) {
+		return new CompletedTransaction(data, format, timestamp, deviceName, this);
+	}
+	
+	public RollingTransaction startTransaction(String sessionId, Format format, String deviceName) {
+		return startTransaction(sessionId, format, (int)(System.currentTimeMillis()/1000), deviceName);
+	}
+	
+	public RollingTransaction startTransaction(String sessionId, Format format, int timestamp, String deviceName) {
+		return new RollingTransaction(sessionId, format, timestamp, deviceName, this);
+	}
 	
 }

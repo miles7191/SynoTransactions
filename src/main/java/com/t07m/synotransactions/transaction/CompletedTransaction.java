@@ -15,24 +15,23 @@
  */
 package com.t07m.synotransactions.transaction;
 
-import com.t07m.synotransactions.SurveillanceStation;
-
-import lombok.Getter;
-
 public class CompletedTransaction extends Transaction{
 
 	private final String[] data;
 	
-	CompletedTransaction(String[] data, Format format, int timestamp, String deviceName, SurveillanceStation surveillanceStation) {
-		super(format, timestamp, deviceName, surveillanceStation);
+	CompletedTransaction(String[] data, Format format, int timestamp, String deviceName, TransactionFactory factory) {
+		super(format, timestamp, deviceName, factory);
 		this.data = data;
+		completed = true;
 		this.invokeThread();
 	}
 
 	void process() {
-		if(!this.getSurveillanceStation().insertTransaction(getDeviceName(), getFormat() == Format.Json ? String.join("", data) : getFormat() == Format.String ? String.join("\n", data) : "", getFormat().toString(), getTimeStamp())) {
+		if(!this.insertTransaction(getDeviceName(), getFormat() == Format.Json ? String.join("", data) : getFormat() == Format.String ? String.join("\n", data) : "", getFormat(), getTimeStamp())) {
 			this.invokeThread();
 			//TODO: Log failed submiting transaction
+		}else {
+			submited = true;
 		}
 	}	
 }

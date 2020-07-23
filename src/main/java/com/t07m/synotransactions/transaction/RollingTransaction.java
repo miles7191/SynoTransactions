@@ -17,8 +17,6 @@ package com.t07m.synotransactions.transaction;
 
 import java.util.ArrayList;
 
-import com.t07m.synotransactions.SurveillanceStation;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -26,25 +24,36 @@ import lombok.Setter;
 public class RollingTransaction extends Transaction{
 
 	private final String sessionId;
-	
+
 	private ArrayList<TransactionEntry> data = new ArrayList<TransactionEntry>();
 
-	private boolean shouldCancel, canceled, shouldComplete;
-	private @Getter boolean completed;
+	private boolean shouldCancel, canceled, began;
 
-	RollingTransaction(String sessionId, Format format, int timestamp, String deviceName, SurveillanceStation surveillanceStation) {
-		super(format, timestamp, deviceName, surveillanceStation);
+	RollingTransaction(String sessionId, Format format, int timestamp, String deviceName, TransactionFactory factory) {
+		super(format, timestamp, deviceName, factory);
 		this.sessionId = sessionId;
 	}
 
 	void process() {
 		if(!canceled) {
 			if(shouldCancel) {
-				canceled = getSurveillanceStation().cancelTransaction(getDeviceName(), sessionId, getTimeStamp());
-			}else if(!completed){
+				if(began) {
+					canceled = true;
+				}else {
+					canceled = cancelTransaction(getDeviceName(), sessionId, getTimeStamp());
+				}
+			}else if(!submited){
+				if(!began) {
+					if(!this.beginTransaction(getDeviceName(), sessionId, 300, getTimeStamp())) {
+						this.invokeThread();
+						return;
+					}else {
+						began = true;
+					}
+				}
 				for(TransactionEntry e : data) {
 					if(!e.isSubmited()) {
-						if(!getSurveillanceStation().appendTransaction(getDeviceName(), sessionId, e.getData(), e.getTime())) {
+						if(!appendTransaction(getDeviceName(), sessionId, e.getData(), e.getTime())) {
 							this.invokeThread();
 							//TODO: log failed submiting transaction
 							return;
@@ -53,8 +62,8 @@ public class RollingTransaction extends Transaction{
 						}
 					}
 				}
-				if(shouldComplete) {
-					completed = getSurveillanceStation().completeTransaction(getDeviceName(), sessionId, (int) (System.currentTimeMillis()/1000));
+				if(completed) {
+					submited = completeTransaction(getDeviceName(), sessionId, (int) (System.currentTimeMillis()/1000));
 				}
 			}
 		}		
@@ -64,28 +73,30 @@ public class RollingTransaction extends Transaction{
 		shouldCancel = true;
 		this.invokeThread();
 	}
-	
+
 	public void complete() {
-		shouldComplete = true;
+		completed = true;
 		this.invokeThread();
 	}
-	
+
 	public void append(String data) {
 		this.append(data, (int) (System.currentTimeMillis()/1000));
 	}
-	
+
 	public void append(String data, int timestamp) {
 		synchronized(data){
-			this.data.add(new TransactionEntry(data, timestamp));
-			this.invokeThread();
+			if(!completed && !canceled) {
+				this.data.add(new TransactionEntry(data, timestamp));
+				this.invokeThread();
+			}
 		}
 	}
-	
+
 	@RequiredArgsConstructor
 	private class TransactionEntry {
 		private final @Getter String data;
 		private final @Getter int time;
 		private @Getter @Setter boolean submited = false;
 	}
-	
+
 }
