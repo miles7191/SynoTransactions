@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public abstract class Transaction {
 
-	private static ExecutorService es = Executors.newFixedThreadPool(Math.min(Runtime.getRuntime().availableProcessors(), 4));
+	private static ExecutorService es = Executors.newWorkStealingPool(Math.min(Runtime.getRuntime().availableProcessors(), 4));
 	
 	public enum Format{String, Json};
 

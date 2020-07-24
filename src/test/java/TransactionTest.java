@@ -1,4 +1,8 @@
+import static org.junit.Assert.fail;
+
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.BeforeClass;
@@ -32,9 +36,9 @@ public class TransactionTest {
 	private static @Getter String host, user, password;
 	private static @Getter int port;
 	private static @Getter boolean useSsl;
-	
+
 	private static @Getter TransactionFactory factory = null;
-	
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		host = System.getProperty("SynoHost");
@@ -56,7 +60,7 @@ public class TransactionTest {
 		}
 		assert(ct.isSubmited());
 	}
-	
+
 	@Test
 	public void rollingTransactionTest() {
 		RollingTransaction rt = factory.startTransaction(new Random().nextInt(10000)+"", Format.String, "POS 64");
@@ -71,6 +75,25 @@ public class TransactionTest {
 			} catch (InterruptedException e) {}
 		}
 		assert(rt.isSubmited());
+	}
+
+	@Test
+	public void multiRollingTransactionTest() {
+		ExecutorService es = Executors.newWorkStealingPool();
+		for(int i = 0; i < 4; i++) {
+			Thread t = new Thread() {
+				public void run() {
+					rollingTransactionTest();
+				}
+			};
+			es.submit(t);
+		}
+		es.shutdown();
+		try {
+			es.awaitTermination(1, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			fail(e.getMessage());
+		}
 	}
 
 }
