@@ -21,11 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
-import lombok.Getter;
+import com.t07m.synotransactions.mcd.Transaction.TransactionType;
 
 public class BOPParser {
 
@@ -56,7 +57,75 @@ public class BOPParser {
 	}
 	
 	public Transaction parse(Scanner scanner) {
-		//TODO: Parse data and return transaction
+		ArrayList<String> lines = new ArrayList<String>();
+		while(scanner.hasNextLine()) {
+			lines.add(scanner.nextLine());
+		}
+		scanner.close();
+		if(lines.size() > 0) {
+			Transaction transaction = new Transaction();
+			//Set raw data as backup
+			transaction.setRaw(lines.toArray(new String[lines.size()]));
+			
+			removeTags(lines);
+			transaction.setTransactionType(parseTransactionType(lines));
+			
+			return transaction;
+		}
 		return null;
+	}
+	
+	private void removeTags(List<String> lines) {
+		for(int i = 0; i < lines.size(); i++) {
+			lines.set(i, lines.get(i).replaceAll("<(\"*\"|[^>])*>", ""));
+		}
+	}
+	
+	private TransactionType parseTransactionType(List<String> lines) {
+		TransactionType defaultType = TransactionType.Order;
+		ArrayList<String> markers = new ArrayList<String>();
+		for(TransactionType tt : TransactionType.values()) {
+			if(tt.getMarker() != null) {
+				markers.add(tt.getMarker());
+			}
+		}
+		int typeIndex = indexOfContaining(lines, 0, markers.toArray(new String[markers.size()]));
+		if(typeIndex == -1)
+			return defaultType;
+		String line = lines.get(typeIndex);
+		for(TransactionType tt : TransactionType.values()) {
+			if(tt.getMarker() != null) {
+				if(line.contains(tt.getMarker())) {
+					lines.remove(typeIndex);
+					return tt;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private int indexOfContaining(List<String> list, int startIndex, String... objectsToFind) {
+		if (list == null) {
+			return -1;
+		}
+		if (startIndex < 0) {
+			startIndex = 0;
+		}
+		if (objectsToFind == null) {
+			for (int i = startIndex; i < list.size(); i++) {
+				if (list.get(i) == null) {
+					return i;
+				}
+			}
+		} else {
+			for (int i = startIndex; i < list.size(); i++) {
+				for(String objectToFind : objectsToFind) {
+					if(list.get(i).contains(objectToFind)) {
+						return i;
+					}
+				}
+			}
+		}
+		return -1;
 	}
 }
