@@ -17,70 +17,73 @@ package com.t07m.synotransactions.mcd;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.t07m.synotransactions.mcd.Transaction.TransactionType;
+import com.t07m.synotransactions.mcd.MCDTransaction.TransactionType;
 
 public class BOPParser {
 
 	public static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a");
-	
-	public Transaction parse(Readable source) {
-		return this.parse(new Scanner(source));
-	}
-	
-	public Transaction parse(InputStream source) {
-		return this.parse(new Scanner(source));
-	}
-	
-	public Transaction parse(File source) throws FileNotFoundException {
-		return this.parse(new Scanner(source));
-	}
-	
-	public Transaction parse(Path source) throws IOException {
+
+	public MCDTransaction parse(Readable source) {
 		return this.parse(new Scanner(source));
 	}
 
-	public Transaction parse(String source) {
+	public MCDTransaction parse(InputStream source) {
 		return this.parse(new Scanner(source));
 	}
-	
-	public Transaction parse(ReadableByteChannel source) {
+
+	public MCDTransaction parse(File source) throws FileNotFoundException {
 		return this.parse(new Scanner(source));
 	}
-	
-	public Transaction parse(Scanner scanner) {
+
+	public MCDTransaction parse(Path source) throws IOException {
+		return this.parse(new Scanner(source));
+	}
+
+	public MCDTransaction parse(String source) {
+		return this.parse(new Scanner(source));
+	}
+
+	public MCDTransaction parse(ReadableByteChannel source) {
+		return this.parse(new Scanner(source));
+	}
+
+	public MCDTransaction parse(Scanner scanner) {
 		ArrayList<String> lines = new ArrayList<String>();
 		while(scanner.hasNextLine()) {
 			lines.add(scanner.nextLine());
 		}
 		scanner.close();
 		if(lines.size() > 0) {
-			Transaction transaction = new Transaction();
+			MCDTransaction transaction = new MCDTransaction();
 			//Set raw data as backup
 			transaction.setRaw(lines.toArray(new String[lines.size()]));
-			
+
 			removeTags(lines);
 			transaction.setTransactionType(parseTransactionType(lines));
-			
+			transaction.setKS(parseKS(lines));
+
 			return transaction;
 		}
 		return null;
 	}
-	
+
 	private void removeTags(List<String> lines) {
 		for(int i = 0; i < lines.size(); i++) {
 			lines.set(i, lines.get(i).replaceAll("<(\"*\"|[^>])*>", ""));
 		}
 	}
-	
+
 	private TransactionType parseTransactionType(List<String> lines) {
 		TransactionType defaultType = TransactionType.Order;
 		ArrayList<String> markers = new ArrayList<String>();
@@ -89,7 +92,15 @@ public class BOPParser {
 				markers.add(tt.getMarker());
 			}
 		}
-		int typeIndex = indexOfContaining(lines, 0, markers.toArray(new String[markers.size()]));
+		int typeIndex = indexOfContaining(lines, 0, new LineFilter() {
+			public boolean accept(String line) {
+				for(String marker : markers.toArray(new String[markers.size()])) {
+					if(line.contains(marker))
+						return true;
+				}
+				return false;
+			}
+		});
 		if(typeIndex == -1)
 			return defaultType;
 		String line = lines.get(typeIndex);
@@ -103,15 +114,29 @@ public class BOPParser {
 		}
 		return null;
 	}
-	
-	private int indexOfContaining(List<String> list, int startIndex, String... objectsToFind) {
+
+	private int parseKS(List<String> lines) {
+		int ksIndex = indexOfContaining(lines, 0, line -> line.contains("KS#"));
+		if(ksIndex != -1) {
+			try {
+				String line = lines.get(ksIndex);
+				int ks = Integer.parseInt(lines.get(ksIndex).substring(4,6).replace(" ", ""));
+				line = line.substring(6, line.length());
+				lines.set(ksIndex, line);
+				return ks;
+			}catch(NumberFormatException e) {}
+		}
+		return -1;
+	}
+
+	private int indexOfContaining(List<String> list, int startIndex, LineFilter filter) {
 		if (list == null) {
 			return -1;
 		}
 		if (startIndex < 0) {
 			startIndex = 0;
 		}
-		if (objectsToFind == null) {
+		if (filter == null) {
 			for (int i = startIndex; i < list.size(); i++) {
 				if (list.get(i) == null) {
 					return i;
@@ -119,13 +144,17 @@ public class BOPParser {
 			}
 		} else {
 			for (int i = startIndex; i < list.size(); i++) {
-				for(String objectToFind : objectsToFind) {
-					if(list.get(i).contains(objectToFind)) {
-						return i;
-					}
+				if(filter.accept(list.get(i))) {
+					return i;
 				}
 			}
 		}
 		return -1;
+	}
+	
+	interface LineFilter{
+		
+		public boolean accept(String line);
+		
 	}
 }
