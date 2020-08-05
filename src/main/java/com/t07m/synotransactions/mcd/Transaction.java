@@ -19,11 +19,30 @@ import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Transaction {
 
-	private @Getter @Setter(AccessLevel.PACKAGE) String receiptType;
+	public enum TransactionType{
+		Order(null), 
+		Promo("**** PROMO ****"), 
+		Refund("**** REFUND ****"), 
+		Activation("ACTIVATION RECEIPT"), 
+		BillableSale("** BILLABLE SALE **"), 
+		Overring("**** OVERRING ****"), 
+		ManagerMeal("Manager meal discount"), 
+		EmployeeMeal("Employee meal discount");
+		
+		private final @Getter String marker;
+
+		TransactionType(String marker){
+			this.marker = marker;
+		}
+	};
+
+	private @Getter @Setter(AccessLevel.PACKAGE) TransactionType transactionType;
 	private @Getter @Setter(AccessLevel.PACKAGE) int KS;
 	private @Getter @Setter(AccessLevel.PACKAGE) LocalDateTime timeStamp;
 	private @Getter @Setter(AccessLevel.PACKAGE) int side;
@@ -38,8 +57,4 @@ public class Transaction {
 	private @Getter @Setter(AccessLevel.PACKAGE) double change;
 	private @Getter @Setter(AccessLevel.PACKAGE) CashlessTransaction[] cashlessTransactions;
 	private @Getter @Setter(AccessLevel.PACKAGE) String[] raw;
-	
-	Transaction(){
-		
-	}	
 }

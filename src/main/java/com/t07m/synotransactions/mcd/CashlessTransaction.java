@@ -17,8 +17,10 @@ package com.t07m.synotransactions.mcd;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class CashlessTransaction {
 
 	private @Getter @Setter(AccessLevel.PACKAGE) String authorizationCode;
@@ -30,8 +32,4 @@ public class CashlessTransaction {
 	private @Getter @Setter(AccessLevel.PACKAGE) String accountNumber;
 	private @Getter @Setter(AccessLevel.PACKAGE) String cardIssuer;
 	private @Getter @Setter(AccessLevel.PACKAGE) String MER;
-
-	CashlessTransaction(){
-		
-	}	
 }
