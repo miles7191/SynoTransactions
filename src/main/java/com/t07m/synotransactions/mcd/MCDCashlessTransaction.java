@@ -19,9 +19,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public class CashlessTransaction {
+public class MCDCashlessTransaction {
 
 	private @Getter @Setter(AccessLevel.PACKAGE) String authorizationCode;
 	private @Getter @Setter(AccessLevel.PACKAGE) String AID;
