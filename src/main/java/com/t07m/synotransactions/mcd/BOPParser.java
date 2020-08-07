@@ -17,16 +17,18 @@ package com.t07m.synotransactions.mcd;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.t07m.synotransactions.mcd.MCDTransaction.TransactionType;
 
@@ -72,6 +74,7 @@ public class BOPParser {
 			removeTags(lines);
 			transaction.setTransactionType(parseTransactionType(lines));
 			transaction.setKS(parseKS(lines));
+			transaction.setTimeStamp(parseTimeStamp(lines));
 
 			return transaction;
 		}
@@ -129,6 +132,27 @@ public class BOPParser {
 		return -1;
 	}
 
+	private LocalDateTime parseTimeStamp(List<String> lines) {
+		int dateIndex = indexOfContaining(lines, 0, new LineFilter() {
+			public boolean accept(String line) {
+				if((line.contains("AM") || line.contains("PM")) && StringUtils.countMatches(line, "/") == 2) {
+					return true;
+				}
+				return false;
+			}
+		});
+		if(dateIndex != -1) {
+			try {
+				LocalDateTime timeStamp = LocalDateTime.parse(lines.get(dateIndex).substring(14), dateFormat);
+				lines.remove(dateIndex);
+				return timeStamp;
+			}catch (DateTimeParseException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
 	private int indexOfContaining(List<String> list, int startIndex, LineFilter filter) {
 		if (list == null) {
 			return -1;
@@ -151,10 +175,10 @@ public class BOPParser {
 		}
 		return -1;
 	}
-	
+
 	interface LineFilter{
-		
+
 		public boolean accept(String line);
-		
+
 	}
 }
