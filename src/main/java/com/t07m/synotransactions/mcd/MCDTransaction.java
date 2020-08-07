@@ -21,7 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class MCDTransaction {
 
@@ -33,7 +35,10 @@ public class MCDTransaction {
 		BillableSale("** BILLABLE SALE **"), 
 		Overring("**** OVERRING ****"), 
 		ManagerMeal("Manager meal discount"), 
-		EmployeeMeal("Employee meal discount");
+		EmployeeMeal("Employee meal discount"),
+		DoorDash("** DOOR DASH **"),
+		Uber("** UberEats SALE **"),
+		PostMates("** Postmates SALE **");
 		
 		private final @Getter String marker;
 
@@ -55,6 +60,6 @@ public class MCDTransaction {
 	private @Getter @Setter(AccessLevel.PACKAGE) double cashTendered;
 	private @Getter @Setter(AccessLevel.PACKAGE) double cashless;
 	private @Getter @Setter(AccessLevel.PACKAGE) double change;
-	private @Getter @Setter(AccessLevel.PACKAGE) CashlessTransaction[] cashlessTransactions;
+	private @Getter @Setter(AccessLevel.PACKAGE) MCDCashlessTransaction[] cashlessTransactions;
 	private @Getter @Setter(AccessLevel.PACKAGE) String[] raw;
 }
