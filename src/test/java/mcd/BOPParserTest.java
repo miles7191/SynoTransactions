@@ -38,15 +38,22 @@ public class BOPParserTest {
 	@Test
 	public void testAllBOPS() {
 		File dir = new File(bopDir);
-		for(File file : dir.listFiles()) {
-			assert(testBOP(file));
+		boolean print = true;
+		File[] files = dir.listFiles();
+		System.out.println("Testing " + files.length + " BOPs");
+		for(File file : files) {
+			assert(testBOP(file, print));
+			print = false;
 		}
+		System.out.println("Done");
 	}
 
-	public boolean testBOP(File file) {
+	public boolean testBOP(File file, boolean print) {
 		try {
 			MCDTransaction trans = bopParser.parse(file);
 			if(trans != null) {
+				if(print)
+					System.out.println(trans.toString());
 				if(trans.getKS() == -1) {
 					System.out.println("KS Parse Failed: " + file.getName());
 					return false;
