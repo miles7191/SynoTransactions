@@ -119,7 +119,7 @@ public class BOPParser {
 				markers.add(tt.getMarker());
 			}
 		}
-		int typeIndex = indexOfContaining(lines, 0, new LineFilter() {
+		int typeIndex = indexOf(lines, 0, new LineFilter() {
 			public boolean accept(String line) {
 				for(String marker : markers.toArray(new String[markers.size()])) {
 					if(line.contains(marker))
@@ -143,7 +143,7 @@ public class BOPParser {
 	}
 
 	private String[] parseHeader(List<String> lines) {
-		int telIndex = indexOfContaining(lines, 0, line -> line.contains("TEL#"));
+		int telIndex = indexOf(lines, 0, line -> line.contains("TEL#"));
 		List<String> header = new ArrayList<String>();
 		Iterator<String> itr = lines.iterator();
 		for(int i = 0; i < telIndex+1; i++) {
@@ -159,7 +159,7 @@ public class BOPParser {
 	}
 
 	private int parseKS(List<String> lines) {
-		int ksIndex = indexOfContaining(lines, 0, line -> line.contains("KS#"));
+		int ksIndex = indexOf(lines, 0, line -> line.contains("KS#"));
 		if(ksIndex != -1) {
 			try {
 				String line = lines.get(ksIndex);
@@ -173,7 +173,7 @@ public class BOPParser {
 	}
 
 	private LocalDateTime parseTimeStamp(List<String> lines) {
-		int dateIndex = indexOfContaining(lines, 0, new LineFilter() {
+		int dateIndex = indexOf(lines, 0, new LineFilter() {
 			public boolean accept(String line) {
 				if((line.contains("AM") || line.contains("PM")) && StringUtils.countMatches(line, "/") == 2) {
 					return true;
@@ -194,7 +194,7 @@ public class BOPParser {
 	}
 
 	private int parseSide(List<String> lines) {
-		int sideIndex = indexOfContaining(lines, 0, line -> line.contains("Side"));
+		int sideIndex = indexOf(lines, 0, line -> line.contains("Side"));
 		if(sideIndex != -1) {
 			try {
 				String line = lines.get(sideIndex);
@@ -208,7 +208,7 @@ public class BOPParser {
 	}
 
 	private double parseOrderNumber(List<String> lines) {
-		int orderIndex = indexOfContaining(lines, 0, line -> line.contains("Order"));
+		int orderIndex = indexOf(lines, 0, line -> line.contains("Order"));
 		if(orderIndex != -1) {
 			try {
 				String line = lines.get(orderIndex);
@@ -227,7 +227,7 @@ public class BOPParser {
 	}
 
 	private String[] parseItems(List<String> lines) {
-		int subtotalIndex = indexOfContaining(lines, 0, line -> line.contains("Subtotal"));
+		int subtotalIndex = indexOf(lines, 0, line -> line.contains("Subtotal"));
 		List<String> items = new ArrayList<String>();
 		if(subtotalIndex != -1) {
 			Iterator<String> itr = lines.iterator();
@@ -242,7 +242,7 @@ public class BOPParser {
 	}
 
 	private double parseSubtotal(List<String> lines) {
-		int subtotalIndex = indexOfContaining(lines, 0, line -> line.contains("Subtotal"));
+		int subtotalIndex = indexOf(lines, 0, line -> line.contains("Subtotal"));
 		if(subtotalIndex != -1) {
 			try {
 				double subtotal = Double.parseDouble(lines.get(subtotalIndex).replace("Subtotal", ""));
@@ -254,7 +254,7 @@ public class BOPParser {
 	}
 
 	private double parseTax(List<String> lines) {
-		int taxIndex = indexOfContaining(lines, 0, line -> line.contains("Tax"));
+		int taxIndex = indexOf(lines, 0, line -> line.contains("Tax"));
 		if(taxIndex != -1) {
 			try {
 				double tax = Double.parseDouble(lines.get(taxIndex).replace("Tax", ""));
@@ -266,7 +266,7 @@ public class BOPParser {
 	}
 
 	private double parseTotal(List<String> lines) {
-		int totalIndex = indexOfContaining(lines, 0, line -> line.contains("Total") && !line.contains("Savings"));
+		int totalIndex = indexOf(lines, 0, line -> line.contains("Total") && !line.contains("Savings"));
 		if(totalIndex != -1) {
 			try {
 				String line = lines.get(totalIndex);
@@ -280,7 +280,7 @@ public class BOPParser {
 	}
 
 	private double parseCashTendered(List<String> lines) {
-		int cashIndex = indexOfContaining(lines, 0, line -> line.contains("Cash Tendered"));
+		int cashIndex = indexOf(lines, 0, line -> line.contains("Cash Tendered"));
 		if(cashIndex != -1) {
 			try {
 				double cash = Double.parseDouble(lines.get(cashIndex).replace("Cash Tendered", ""));
@@ -292,7 +292,7 @@ public class BOPParser {
 	}
 
 	private double parseChange(List<String> lines) {
-		int changeIndex = indexOfContaining(lines, 0, line -> line.contains("Change"));
+		int changeIndex = indexOf(lines, 0, line -> line.contains("Change"));
 		if(changeIndex != -1) {
 			try {
 				double change = Double.parseDouble(lines.get(changeIndex).replace("Change", ""));
@@ -304,7 +304,7 @@ public class BOPParser {
 	}
 
 	private double parseCashless(List<String> lines) {
-		int cashlessIndex = indexOfContaining(lines, 0, line -> line.contains("Cashless"));
+		int cashlessIndex = indexOf(lines, 0, line -> line.contains("Cashless"));
 		if(cashlessIndex != -1) {
 			try {
 				double cashless = Double.parseDouble(lines.get(cashlessIndex).replace("Cashless", ""));
@@ -316,7 +316,7 @@ public class BOPParser {
 	}
 
 	private double parseTotalSavings(List<String> lines) {
-		int totalSavingsIndex = indexOfContaining(lines, 0, line -> line.contains("Total Savings"));
+		int totalSavingsIndex = indexOf(lines, 0, line -> line.contains("Total Savings"));
 		if(totalSavingsIndex != -1) {
 			try {
 				double totalSavings = Double.parseDouble(lines.get(totalSavingsIndex).replace("Total Savings", ""));
@@ -330,7 +330,7 @@ public class BOPParser {
 	private MCDCashlessTransaction[] parseCashlessTransactions(List<String> lines) {
 		List<MCDCashlessTransaction> transactions = new ArrayList<MCDCashlessTransaction>();
 		int merIndex = -1;
-		while((merIndex = indexOfContaining(lines, 0, line -> line.contains("MER#"))) != -1) {
+		while((merIndex = indexOf(lines, 0, line -> line.contains("MER#"))) != -1) {
 			MCDCashlessTransaction transaction = new MCDCashlessTransaction();
 			transaction.setMER(parseCashlessMER(lines, merIndex));
 			transaction.setCardIssuer(parseCashlessCardIssuer(lines, merIndex+1));
@@ -356,7 +356,7 @@ public class BOPParser {
 	}
 	
 	private String parseCashlessCardIssuer(List<String> lines, int start) {
-		int issuerIndex = indexOfContaining(lines, start, line -> line.contains("CARD ISSUER"), line ->line.contains("MER#"));
+		int issuerIndex = indexOf(lines, start, line -> line.contains("CARD ISSUER"), line ->line.contains("MER#"));
 		if(issuerIndex != -1) {
 			String line = lines.get(issuerIndex + 1);
 			String issuer = null;
@@ -380,7 +380,7 @@ public class BOPParser {
 	}
 
 	private String parseCashlessAccountNumber(List<String> lines, int start) {
-		int cardNumberIndex = indexOfContaining(lines, start, line -> line.contains("****"), line -> line.contains("MER#"));
+		int cardNumberIndex = indexOf(lines, start, line -> line.contains("****"), line -> line.contains("MER#"));
 		if(cardNumberIndex != -1) {
 			String cardNumber = lines.get(cardNumberIndex).replace(" ", "");
 			lines.remove(cardNumberIndex);
@@ -390,7 +390,7 @@ public class BOPParser {
 	}
 
 	private double parseCashlessTransactionAmount(List<String> lines, int start) {
-		int transactionAmountndex = indexOfContaining(lines, start, line -> line.contains("TRANSACTION AMOUNT"), line -> line.contains("MER#"));
+		int transactionAmountndex = indexOf(lines, start, line -> line.contains("TRANSACTION AMOUNT"), line -> line.contains("MER#"));
 		if(transactionAmountndex != -1) {
 			try {
 				double transactionAmount = Double.parseDouble(lines.get(transactionAmountndex).replace("TRANSACTION AMOUNT", ""));
@@ -402,7 +402,7 @@ public class BOPParser {
 	}
 	
 	private String parseCashlessAuthorizationCode(List<String> lines, int start) {
-		int authorizationCodeIndex = indexOfContaining(lines, start, line -> line.contains("AUTHORIZATION CODE - "), line -> line.contains("MER#"));
+		int authorizationCodeIndex = indexOf(lines, start, line -> line.contains("AUTHORIZATION CODE - "), line -> line.contains("MER#"));
 		if(authorizationCodeIndex != -1) {
 			String authorizationCode = lines.get(authorizationCodeIndex).replace("AUTHORIZATION CODE - ", "");
 			lines.remove(authorizationCodeIndex);
@@ -418,7 +418,7 @@ public class BOPParser {
 				markers.add(tt.getMarker());
 			}
 		}
-		int typeIndex = indexOfContaining(lines, start, new LineFilter() {
+		int typeIndex = indexOf(lines, start, new LineFilter() {
 			public boolean accept(String line) {
 				for(String marker : markers.toArray(new String[markers.size()])) {
 					if(line.contains(marker))
@@ -442,7 +442,7 @@ public class BOPParser {
 	}
 
 	private String parseCashlessSEQNumber(List<String> lines, int start) {
-		int seqNumberIndex = indexOfContaining(lines, start, line -> line.contains("SEQ# "), line -> line.contains("MER#"));
+		int seqNumberIndex = indexOf(lines, start, line -> line.contains("SEQ# "), line -> line.contains("MER#"));
 		if(seqNumberIndex != -1) {
 			String seqNumber = lines.get(seqNumberIndex).replace("SEQ# ", "");
 			lines.remove(seqNumberIndex);
@@ -452,7 +452,7 @@ public class BOPParser {
 	}
 	
 	private String parseCashlessAID(List<String> lines, int start) {
-		int aidIndex = indexOfContaining(lines, start, line -> line.contains("AID: "), line -> line.contains("MER#"));
+		int aidIndex = indexOf(lines, start, line -> line.contains("AID: "), line -> line.contains("MER#"));
 		if(aidIndex != -1) {
 			String aid = lines.get(aidIndex).replace("AID: ", "");
 			lines.remove(aidIndex);
@@ -461,11 +461,11 @@ public class BOPParser {
 		return null;
 	}
 	
-	private int indexOfContaining(List<String> list, int startIndex, LineFilter filter) {
-		return indexOfContaining(list, startIndex, filter, line -> false);
+	private int indexOf(List<String> list, int startIndex, LineFilter filter) {
+		return indexOf(list, startIndex, filter, line -> false);
 	}
 
-	private int indexOfContaining(List<String> list, int startIndex, LineFilter filter, LineFilter abortFilter) {
+	private int indexOf(List<String> list, int startIndex, LineFilter filter, LineFilter abortFilter) {
 		if (list == null) {
 			return -1;
 		}
