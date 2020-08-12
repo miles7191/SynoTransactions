@@ -38,26 +38,18 @@ public class BOPParserTest {
 	@Test
 	public void testAllBOPS() {
 		File dir = new File(bopDir);
-		boolean print = true;
 		File[] files = dir.listFiles();
 		System.out.println("Testing " + files.length + " BOPs");
 		for(File file : files) {
-			assert(testBOP(file, print));
-			print = false;
+			assert(testBOP(file));
 		}
 		System.out.println("Done");
 	}
 
-	public boolean testBOP(File file, boolean print) {
+	public boolean testBOP(File file) {
 		try {
 			MCDTransaction trans = bopParser.parse(file);
 			if(trans != null) {
-				if(print)
-					System.out.println(trans.toString());
-				if(trans.getKS() == -1) {
-					System.out.println("KS Parse Failed: " + file.getName());
-					return false;
-				}
 				return true;
 			}
 		} catch (FileNotFoundException e) {
