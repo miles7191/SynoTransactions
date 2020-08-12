@@ -45,13 +45,19 @@ public class MCDTransaction {
 		TransactionType(String marker){
 			this.marker = marker;
 		}
+		
+		public static TransactionType defaultType() {
+			return Order;
+		}
+		
 	};
 
 	private @Getter @Setter(AccessLevel.PACKAGE) TransactionType transactionType;
+	private @Getter @Setter(AccessLevel.PACKAGE) String[] header;
 	private @Getter @Setter(AccessLevel.PACKAGE) int KS;
 	private @Getter @Setter(AccessLevel.PACKAGE) LocalDateTime timeStamp;
 	private @Getter @Setter(AccessLevel.PACKAGE) int side;
-	private @Getter @Setter(AccessLevel.PACKAGE) double order;
+	private @Getter @Setter(AccessLevel.PACKAGE) double orderNumber;
 	private @Getter @Setter(AccessLevel.PACKAGE) String[] items;
 	private @Getter @Setter(AccessLevel.PACKAGE) double subTotal;
 	private @Getter @Setter(AccessLevel.PACKAGE) double tax;
@@ -60,6 +66,8 @@ public class MCDTransaction {
 	private @Getter @Setter(AccessLevel.PACKAGE) double cashTendered;
 	private @Getter @Setter(AccessLevel.PACKAGE) double cashless;
 	private @Getter @Setter(AccessLevel.PACKAGE) double change;
+	private @Getter @Setter(AccessLevel.PACKAGE) double totalSavings;
 	private @Getter @Setter(AccessLevel.PACKAGE) MCDCashlessTransaction[] cashlessTransactions;
+	private @Getter @Setter(AccessLevel.PACKAGE) String[] footer;
 	private @Getter @Setter(AccessLevel.PACKAGE) String[] raw;
 }
