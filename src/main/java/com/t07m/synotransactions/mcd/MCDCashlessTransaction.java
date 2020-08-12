@@ -25,13 +25,29 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class MCDCashlessTransaction {
 
+	public enum PaymentType{
+		Swipe("FSwipe"), 
+		ChipRead("CHIP READ"), 
+		Contactless("CONTACTLESS");
+
+		private final @Getter String marker;
+
+		PaymentType(String marker){
+			this.marker = marker;
+		}
+
+		public static PaymentType defaultType() {
+			return Swipe;
+		}
+
+	};
+
 	private @Getter @Setter(AccessLevel.PACKAGE) String authorizationCode;
 	private @Getter @Setter(AccessLevel.PACKAGE) String AID;
 	private @Getter @Setter(AccessLevel.PACKAGE) String SEQ;
-	private @Getter @Setter(AccessLevel.PACKAGE) boolean swipe;
-	private @Getter @Setter(AccessLevel.PACKAGE) boolean chipRead;
+	private @Getter @Setter(AccessLevel.PACKAGE) PaymentType paymentType;
 	private @Getter @Setter(AccessLevel.PACKAGE) double transactionAmount;
 	private @Getter @Setter(AccessLevel.PACKAGE) String accountNumber;
 	private @Getter @Setter(AccessLevel.PACKAGE) String cardIssuer;
-	private @Getter @Setter(AccessLevel.PACKAGE) String MER;
+	private @Getter @Setter(AccessLevel.PACKAGE) int MER;
 }
