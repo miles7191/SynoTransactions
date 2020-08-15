@@ -21,7 +21,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.t07m.synotransactions.mcd.KeyStation;
+import com.t07m.synotransactions.mcd.MCDConfig;
+import com.t07m.synotransactions.mcd.MCDConfig.KeyStation;
 import com.t07m.synotransactions.mcd.SMBWatcher;
 
 class SMBWatcherTest {
@@ -30,15 +31,13 @@ class SMBWatcherTest {
 	
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		ks = new KeyStation(
-				0,
-				true,
-				System.getProperty("ksip"),
-				System.getProperty("ksdomain"),
-				System.getProperty("ksusername"),
-				System.getProperty("kspassword"),
-				System.getProperty("ksreprint"),
-				null);
+		ks = new MCDConfig().new KeyStation() {
+			public String getIP() {return System.getProperty("ksip");}
+			public String getDomain() {return System.getProperty("ksdomain");}
+			public String getUsername() {return System.getProperty("ksusername");}
+			public String getPassword() {return System.getProperty("kspassword");}
+			public String getReprintPath() {return System.getProperty("ksreprint");}
+		};
 		System.out.println(ks);
 	}
 
