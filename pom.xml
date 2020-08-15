@@ -25,6 +25,11 @@
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   	<dependency>
+  		<groupId>org.yaml</groupId>
+  		<artifactId>snakeyaml</artifactId>
+  		<version>1.26</version>
+  	</dependency>
+  	<dependency>
   		<groupId>com.t07m.config.yaml</groupId>
   		<artifactId>YamlConfiguration</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
