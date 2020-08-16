@@ -25,11 +25,11 @@ import net.cubespace.Yamler.Config.YamlConfig;
 
 public class MCDConfig extends YamlConfig {
 
-	private @Getter @Setter String SynoIP;
-	private @Getter @Setter String SynoPort;
-	private @Getter @Setter String SynoUsername;
-	private @Getter @Setter String SynoPassword;
-	private @Getter @Setter KeyStation[] KeyStations;
+	private @Getter @Setter String SynoIP = "";
+	private @Getter @Setter String SynoPort = "";
+	private @Getter @Setter String SynoUsername = "";
+	private @Getter @Setter String SynoPassword = "";
+	private @Getter @Setter KeyStation[] KeyStations = new KeyStation[0];
 	
 	public MCDConfig() {
 		CONFIG_HEADER = new String[]{"SynoTransactions MCD Configuration Data"};

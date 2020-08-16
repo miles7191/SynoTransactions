@@ -15,6 +15,7 @@
  */
 package com.t07m.synotransactions;
 
+import java.awt.Frame;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -76,6 +77,7 @@ public class SynoTransactions extends Application{
 				Constructor<KeyStationManager> cons = cls.getConstructor(SynoTransactions.class);
 				keyStationManager = cons.newInstance(this);
 				this.registerService(keyStationManager);
+				this.console.setState(Frame.ICONIFIED);
 			} catch (ClassNotFoundException | ClassCastException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
 				this.console.log("Unable to initiate specified KeyStationManager: " + e.getMessage());
@@ -91,7 +93,7 @@ public class SynoTransactions extends Application{
 	public class Config extends YamlConfig {
 
 		@Comment("Class path to KeyStationManager")
-		private @Getter @Setter String KeyStationManagerClass;
+		private @Getter @Setter String KeyStationManagerClass = "";
 		
 		public Config() {
 			CONFIG_HEADER = new String[]{"SynoTransactions General Configuration Data"};
