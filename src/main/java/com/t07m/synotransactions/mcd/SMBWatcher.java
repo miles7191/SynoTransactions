@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.t07m.application.Service;
 import com.t07m.synotransactions.SynoTransactions;
-import com.t07m.synotransactions.mcd.MCDConfig.KeyStation;
+import com.t07m.synotransactions.mcd.MCDConfig.MCDKeyStationConfig;
 
 import jcifs.CIFSContext;
 import jcifs.CIFSException;
@@ -38,10 +38,10 @@ public abstract class SMBWatcher extends Service<SynoTransactions>{
 
 	private static ExecutorService es = Executors.newCachedThreadPool();
 	
-	private final KeyStation ks;
+	private final MCDKeyStationConfig ks;
 	private SmbResource[] oldBOPs;
 
-	public SMBWatcher(SynoTransactions app, @NonNull KeyStation ks) {
+	public SMBWatcher(SynoTransactions app, @NonNull MCDKeyStationConfig ks) {
 		super(app, TimeUnit.SECONDS.toMillis(1));
 		this.ks = ks;
 	}
@@ -62,7 +62,7 @@ public abstract class SMBWatcher extends Service<SynoTransactions>{
 		oldBOPs = currentBOPs;
 	}
 
-	public void cleanup() {
+	public static void shutdown() {
 		es.shutdown();
 		try {
 			es.awaitTermination(5, TimeUnit.SECONDS);

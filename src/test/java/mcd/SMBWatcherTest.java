@@ -22,16 +22,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.t07m.synotransactions.mcd.MCDConfig;
-import com.t07m.synotransactions.mcd.MCDConfig.KeyStation;
+import com.t07m.synotransactions.mcd.MCDConfig.MCDKeyStationConfig;
 import com.t07m.synotransactions.mcd.SMBWatcher;
 
 class SMBWatcherTest {
 
-	private static KeyStation ks;
+	private static MCDKeyStationConfig ks;
 	
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		ks = new MCDConfig().new KeyStation() {
+		ks = new MCDConfig().new MCDKeyStationConfig() {
 			public String getIP() {return System.getProperty("ksip");}
 			public String getDomain() {return System.getProperty("ksdomain");}
 			public String getUsername() {return System.getProperty("ksusername");}

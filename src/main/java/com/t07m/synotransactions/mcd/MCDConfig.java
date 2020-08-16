@@ -18,7 +18,9 @@ package com.t07m.synotransactions.mcd;
 import java.io.File;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import net.cubespace.Yamler.Config.YamlConfig;
@@ -26,10 +28,14 @@ import net.cubespace.Yamler.Config.YamlConfig;
 public class MCDConfig extends YamlConfig {
 
 	private @Getter @Setter String SynoIP = "";
-	private @Getter @Setter String SynoPort = "";
+	private @Getter @Setter int SynoPort = 5000;
+	private @Getter @Setter boolean UseSSL = false;
+	private @Getter @Setter String DSName = "";
 	private @Getter @Setter String SynoUsername = "";
 	private @Getter @Setter String SynoPassword = "";
-	private @Getter @Setter KeyStation[] KeyStations = new KeyStation[0];
+	private @Getter @Setter MCDKeyStationConfig[] KeyStations = new MCDKeyStationConfig[] {
+			new MCDKeyStationConfig(0, false, "127.0.0.1", "", "", "", "", "")
+	};
 	
 	public MCDConfig() {
 		CONFIG_HEADER = new String[]{"SynoTransactions MCD Configuration Data"};
@@ -37,14 +43,16 @@ public class MCDConfig extends YamlConfig {
 	}
 	
 	@ToString
-	public class KeyStation {
-		private @Getter @Setter(AccessLevel.PACKAGE) int ID;
-		private @Getter @Setter(AccessLevel.PACKAGE) boolean enabled;
-		private @Getter @Setter(AccessLevel.PACKAGE) String IP;
-		private @Getter @Setter(AccessLevel.PACKAGE) String domain;
-		private @Getter @Setter(AccessLevel.PACKAGE) String username;
-		private @Getter @Setter(AccessLevel.PACKAGE) String password;
-		private @Getter @Setter(AccessLevel.PACKAGE) String reprintPath;
-		private @Getter @Setter(AccessLevel.PACKAGE) String SynologyDeviceName;	
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public class MCDKeyStationConfig extends YamlConfig{
+		private @Getter @Setter int ID;
+		private @Getter @Setter boolean Enabled;
+		private @Getter @Setter String IP;
+		private @Getter @Setter String Domain;
+		private @Getter @Setter String Username;
+		private @Getter @Setter String Password;
+		private @Getter @Setter String ReprintPath;
+		private @Getter @Setter String SynologyDeviceName;	
 	}
 }
