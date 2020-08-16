@@ -18,10 +18,29 @@ package com.t07m.synotransactions.mcd;
 import com.t07m.synotransactions.KeyStationManager;
 import com.t07m.synotransactions.SynoTransactions;
 
+import net.cubespace.Yamler.Config.InvalidConfigurationException;
+
 public class MCDKeyStationManager extends KeyStationManager{
 
+	private MCDConfig config;
+	
 	public MCDKeyStationManager(SynoTransactions app) {
 		super(app);
+	}
+	
+	public void init() {
+		this.config = new MCDConfig();
+		try {
+			this.config.init();
+			this.config.save();
+		} catch (InvalidConfigurationException e) {
+			e.printStackTrace();
+			app.getConsole().log("Unable to load MCD configuration file!");
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e1) {}
+			System.exit(-1);
+		}
 	}
 	
 	public void process() {
