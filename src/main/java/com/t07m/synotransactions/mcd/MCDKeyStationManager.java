@@ -47,7 +47,7 @@ public class MCDKeyStationManager extends KeyStationManager{
 			this.config.save();
 		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
-			app.getConsole().log("Unable to load MCD configuration file!");
+			app.getConsole().getLogger().severe("Unable to load MCD configuration file!");
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e1) {}
@@ -85,12 +85,12 @@ public class MCDKeyStationManager extends KeyStationManager{
 				if(ks.getConfig().equals(ksConfig)) {
 					return;
 				}else if(ks.getConfig().getSynologyDeviceName().equalsIgnoreCase(ksConfig.getSynologyDeviceName())) {
-					app.getConsole().log("Attempted to load KS with duplicate name! " + ksConfig.getSynologyDeviceName());
+					app.getConsole().getLogger().warning("Attempted to load KS with duplicate name! " + ksConfig.getSynologyDeviceName());
 					return;
 				}
 			}
 			keyStations.add(ksFactory.new MCDKeyStation(ksConfig));
-			app.getConsole().log("Loaded KS: " + ksConfig.getSynologyDeviceName());
+			app.getConsole().getLogger().info("Loaded KS: " + ksConfig.getSynologyDeviceName());
 		}
 	}
 	

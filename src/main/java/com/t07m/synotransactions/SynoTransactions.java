@@ -65,8 +65,8 @@ public class SynoTransactions extends Application{
 		
 		String keyStationManagerClass = config.getKeyStationManagerClass();
 		if(keyStationManagerClass == null) {
-			this.console.log("No KeyStationManager Specified!");
-			this.console.log("Please specify the class for the KeyStationManager and restart the application.");
+			this.console.getLogger().severe("No KeyStationManager Specified!");
+			this.console.getLogger().severe("Please specify the class for the KeyStationManager and restart the application.");
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {}
@@ -80,7 +80,7 @@ public class SynoTransactions extends Application{
 				this.console.setState(Frame.ICONIFIED);
 			} catch (ClassNotFoundException | ClassCastException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
-				this.console.log("Unable to initiate specified KeyStationManager: " + e.getMessage());
+				this.console.getLogger().severe("Unable to initiate specified KeyStationManager: " + e.getMessage());
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e2) {}

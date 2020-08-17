@@ -48,7 +48,7 @@ public class MCDReceiptFormatter {
 		}
 		String order = "";
 		if(trans.getOrderNumber() != -1) {
-			order = "Order " + decimalFormat.format(trans.getOrderNumber()).replace(".", "/").replace("/0", "");
+			order = "Order " + Double.toString(trans.getOrderNumber()).replace(".0", "").replace(".", "/");
 			while(side.length() + order.length() < 39) {
 				side += " ";
 			}
