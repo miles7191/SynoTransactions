@@ -102,6 +102,15 @@ public class MCDReceiptFormatter {
 			}
 			lines.add(cash + space + cashAmount);
 		}
+		if(trans.getChange() != -1) {
+			String change = "Change";
+			String changeAmount = decimalFormat.format(trans.getChange());
+			String space = "";
+			while(change.length() + space.length() + changeAmount.length() < 39) {
+				space += " ";
+			}
+			lines.add(change + space + changeAmount);
+		}
 		if(trans.getCashlessTransactions().length > 0) {
 			for(MCDCashlessTransaction ct : trans.getCashlessTransactions()) {
 				if(ct.getMER() != -1) {
