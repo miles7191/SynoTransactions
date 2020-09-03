@@ -37,9 +37,11 @@ import lombok.NonNull;
 public abstract class SMBWatcher extends Service<SynoTransactions>{
 
 	private static ExecutorService es = Executors.newCachedThreadPool();
-	
+
 	private final MCDKeyStationConfig ks;
 	private SmbResource[] oldBOPs;
+	private SmbResource folder;
+	private long lastModified = 0;
 
 	public SMBWatcher(SynoTransactions app, @NonNull MCDKeyStationConfig ks) {
 		super(app, TimeUnit.SECONDS.toMillis(1));
@@ -51,15 +53,22 @@ public abstract class SMBWatcher extends Service<SynoTransactions>{
 	}
 
 	public void process() {
-		SmbResource[] currentBOPs = getBOPs();
-		for(SmbResource res : currentBOPs) {
-			if(!containsByName(oldBOPs, res.getName())) {
-				es.submit(() -> {try {
-					onNewBop(res.openInputStream());
-				} catch (CIFSException e) {}});
+		try {
+			folder = getContext().get(getRemoteURL());
+			long lm = folder.lastModified();
+			if(lastModified != lm) {
+				SmbResource[] currentBOPs = getBOPs();
+				for(SmbResource res : currentBOPs) {
+					if(!containsByName(oldBOPs, res.getName())) {
+						es.submit(() -> {try {
+							onNewBop(res.openInputStream());
+						} catch (CIFSException e) {}});
+					}
+				}
+				oldBOPs = currentBOPs;
+				lastModified = lm;
 			}
-		}
-		oldBOPs = currentBOPs;
+		} catch (CIFSException e1) {}
 	}
 
 	public static void shutdown() {
@@ -68,7 +77,7 @@ public abstract class SMBWatcher extends Service<SynoTransactions>{
 			es.awaitTermination(5, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {}
 	}
-	
+
 	public abstract void onNewBop(InputStream res);
 
 	private boolean containsByName(SmbResource[] resources, String name) {
@@ -84,7 +93,6 @@ public abstract class SMBWatcher extends Service<SynoTransactions>{
 	private SmbResource[] getBOPs() {
 		List<SmbResource> bops = new ArrayList<SmbResource>();
 		try {
-			SmbResource folder = getContext().get(getRemoteURL());
 			Iterator<SmbResource> itr = folder.children("*.bop");
 			while(itr.hasNext()) {
 				bops.add(itr.next());
