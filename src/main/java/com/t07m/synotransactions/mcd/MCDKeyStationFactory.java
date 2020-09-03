@@ -52,7 +52,7 @@ public class MCDKeyStationFactory {
 					MCDTransaction trans = bopParser.parse(res);
 					if(trans != null) {
 						transactionFactory.submitTransaction(MCDReceiptFormatter.format(trans), Format.String, config.getSynologyDeviceName());
-						app.getConsole().getLogger().info(config.getSynologyDeviceName() + " Submited Transaction.");
+						app.getConsole().getLogger().info("KeyStation " + config.getID() + " submitted new transaction to " + config.getSynologyDeviceName() + ".");
 					}else {
 						app.getConsole().getLogger().warning(config.getSynologyDeviceName() + " Unable to parse transaction!");
 					}
