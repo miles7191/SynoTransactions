@@ -58,11 +58,13 @@ public abstract class SMBWatcher extends Service<SynoTransactions>{
 			long lm = folder.lastModified();
 			if(lastModified != lm) {
 				SmbResource[] currentBOPs = getBOPs();
-				for(SmbResource res : currentBOPs) {
-					if(!containsByName(oldBOPs, res.getName())) {
-						es.submit(() -> {try {
-							onNewBop(res.openInputStream());
-						} catch (CIFSException e) {}});
+				if(oldBOPs != null) {
+					for(SmbResource res : currentBOPs) {
+						if(!containsByName(oldBOPs, res.getName())) {
+							es.submit(() -> {try {
+								onNewBop(res.openInputStream());
+							} catch (CIFSException e) {}});
+						}
 					}
 				}
 				oldBOPs = currentBOPs;
@@ -93,13 +95,15 @@ public abstract class SMBWatcher extends Service<SynoTransactions>{
 	private SmbResource[] getBOPs() {
 		List<SmbResource> bops = new ArrayList<SmbResource>();
 		try {
-			Iterator<SmbResource> itr = folder.children("*.bop");
-			while(itr.hasNext()) {
-				bops.add(itr.next());
+			if(folder != null) {
+				Iterator<SmbResource> itr = folder.children("*.bop");
+				while(itr.hasNext()) {
+					bops.add(itr.next());
+				}
+			}else {
+				return null;
 			}
-		} catch (CIFSException e) {
-			e.printStackTrace();
-		}
+		} catch (CIFSException e) {}
 		return bops.toArray(new SmbResource[bops.size()]);
 	}
 
