@@ -84,13 +84,13 @@ public class MCDKeyStationManager extends KeyStationManager{
 			for(MCDKeyStation ks : keyStations) {
 				if(ks.getConfig().equals(ksConfig)) {
 					return;
-				}else if(ks.getConfig().getSynologyDeviceName().equalsIgnoreCase(ksConfig.getSynologyDeviceName())) {
-					app.getConsole().getLogger().warning("Attempted to load KS with duplicate name! " + ksConfig.getSynologyDeviceName());
+				}else if(ks.getConfig().getID() == ksConfig.getID()) {
+					app.getConsole().getLogger().warning("Attempted to load KS with duplicate ID! " + ksConfig.getID());
 					return;
 				}
 			}
 			keyStations.add(ksFactory.new MCDKeyStation(ksConfig));
-			app.getConsole().getLogger().info("Loaded KS: " + ksConfig.getSynologyDeviceName());
+			app.getConsole().getLogger().info("Loaded KS: " + ksConfig.getID());
 		}
 	}
 	
