@@ -41,7 +41,7 @@ public class SynoTransactions extends Application{
 	
 	public void init() {
 		this.console = new ConsoleWindow("SynoTransactions") {
-			public void closeRequested() {
+			public void close() {
 				stop();
 			}
 		};
