@@ -15,12 +15,13 @@
  */
 package com.t07m.synotransactions;
 
-import java.awt.Frame;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import com.t07m.application.Application;
+import com.t07m.console.Console;
+import com.t07m.console.NativeConsole;
 import com.t07m.swing.console.ConsoleWindow;
 
 import lombok.Getter;
@@ -32,20 +33,28 @@ import net.cubespace.Yamler.Config.YamlConfig;
 public class SynoTransactions extends Application{
 
 	public static void main(String[] args) {
-		new SynoTransactions();
-	}
-	
-	private @Getter ConsoleWindow console;
-	
-	private KeyStationManager keyStationManager;
-	
-	public void init() {
-		this.console = new ConsoleWindow("SynoTransactions") {
-			public void close() {
-				stop();
+		boolean gui = true;
+		if(args.length > 0) {
+			for(String arg : args) {
+				if(arg.equalsIgnoreCase("-nogui")) {
+					gui = false;
+				}
 			}
-		};
-		
+		}
+		new SynoTransactions(gui).start();
+	}
+
+	private final boolean gui;
+
+	private @Getter Console console;
+
+	private KeyStationManager keyStationManager;
+
+	public SynoTransactions(boolean gui) {
+		this.gui = gui;
+	}
+
+	public void init() {		
 		Config config = new Config();
 		try {
 			config.init();
@@ -58,11 +67,26 @@ public class SynoTransactions extends Application{
 			} catch (InterruptedException e1) {}
 			System.exit(-1);
 		}
-		
-		this.console.setup();
-		this.console.setLocationRelativeTo(null);
-		this.console.setVisible(true);		
-		
+
+		if(this.gui) {
+			ConsoleWindow cw = new ConsoleWindow("SynoTransactions") {
+				public void close() {
+					stop();
+				}
+			};
+			cw.setup();
+			cw.setLocationRelativeTo(null);
+			cw.setVisible(true);
+			this.console = cw;
+		}else {
+			this.console = new NativeConsole("SynoTransactions") {
+				public void close() {
+					stop();
+				}
+			};
+			this.console.setup();
+		}
+
 		String keyStationManagerClass = config.getKeyStationManagerClass();
 		if(keyStationManagerClass == null) {
 			this.console.getLogger().severe("No KeyStationManager Specified!");
@@ -77,7 +101,6 @@ public class SynoTransactions extends Application{
 				Constructor<KeyStationManager> cons = cls.getConstructor(SynoTransactions.class);
 				keyStationManager = cons.newInstance(this);
 				this.registerService(keyStationManager);
-				this.console.setState(Frame.ICONIFIED);
 			} catch (ClassNotFoundException | ClassCastException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
 				this.console.getLogger().severe("Unable to initiate specified KeyStationManager: " + e.getMessage());
@@ -87,19 +110,18 @@ public class SynoTransactions extends Application{
 				System.exit(-1);
 			}
 		}
-		
 	}
-	
+
 	public class Config extends YamlConfig {
 
 		@Comment("Class path to KeyStationManager")
 		private @Getter @Setter String KeyStationManagerClass = "";
-		
+
 		public Config() {
 			CONFIG_HEADER = new String[]{"SynoTransactions General Configuration Data"};
 			CONFIG_FILE = new File("config.yml");
 		}
-		
+
 	}
-	
+
 }
