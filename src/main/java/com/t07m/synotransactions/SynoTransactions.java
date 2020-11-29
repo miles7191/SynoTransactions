@@ -23,6 +23,7 @@ import com.t07m.application.Application;
 import com.t07m.console.Console;
 import com.t07m.console.NativeConsole;
 import com.t07m.swing.console.ConsoleWindow;
+import com.t07m.synotransactions.command.StopCommand;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -86,6 +87,8 @@ public class SynoTransactions extends Application{
 			};
 			this.console.setup();
 		}
+		
+		this.console.registerCommand(new StopCommand());
 
 		String keyStationManagerClass = config.getKeyStationManagerClass();
 		if(keyStationManagerClass == null) {
