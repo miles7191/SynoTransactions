@@ -47,7 +47,7 @@ public class MCDKeyStationManager extends KeyStationManager{
 			this.config.save();
 		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
-			app.getConsole().getLogger().severe("Unable to load MCD configuration file!");
+			getApp().getConsole().getLogger().severe("Unable to load MCD configuration file!");
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e1) {}
@@ -67,7 +67,7 @@ public class MCDKeyStationManager extends KeyStationManager{
 			for(MCDKeyStation ks : keyStations) {
 				if(ks.getConfig().isEnabled()) {
 					if(ks.getSmbWatcher() == null) {
-						ks.start(app);
+						ks.start(getApp());
 					}
 				}else {
 					if(ks.getSmbWatcher() != null) {
@@ -85,17 +85,17 @@ public class MCDKeyStationManager extends KeyStationManager{
 				if(ks.getConfig().equals(ksConfig)) {
 					return;
 				}else if(ks.getConfig().getID() == ksConfig.getID()) {
-					app.getConsole().getLogger().warning("Attempted to load KS with duplicate ID! " + ksConfig.getID());
+					getApp().getConsole().getLogger().warning("Attempted to load KS with duplicate ID! " + ksConfig.getID());
 					return;
 				}
 			}
 			keyStations.add(ksFactory.new MCDKeyStation(ksConfig));
-			app.getConsole().getLogger().info("Loaded KS: " + ksConfig.getID());
+			getApp().getConsole().getLogger().info("Loaded KS: " + ksConfig.getID());
 		}
 	}
 	
 	private void cleanupKeyStation(MCDKeyStation ks) {
-		app.removeService(ks.getSmbWatcher());
+		getApp().removeService(ks.getSmbWatcher());
 	}
 
 	public void cleanup() {
@@ -104,7 +104,7 @@ public class MCDKeyStationManager extends KeyStationManager{
 			while(itr.hasNext()) {
 				MCDKeyStation ks = itr.next();
 				itr.remove();
-				app.removeService(ks.getSmbWatcher());
+				getApp().removeService(ks.getSmbWatcher());
 				ks.cleanup();
 			}
 			SMBWatcher.shutdown();
