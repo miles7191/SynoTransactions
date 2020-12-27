@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.t07m.synotransactions.KeyStationManager;
 import com.t07m.synotransactions.SynoTransactions;
 import com.t07m.synotransactions.mcd.MCDConfig.MCDKeyStationConfig;
@@ -30,6 +33,8 @@ import net.cubespace.Yamler.Config.InvalidConfigurationException;
 
 public class MCDKeyStationManager extends KeyStationManager{
 
+	private static Logger logger = LoggerFactory.getLogger(MCDKeyStationManager.class);
+	
 	private MCDConfig config;
 
 	private @Getter MCDKeyStationFactory ksFactory;
@@ -47,7 +52,7 @@ public class MCDKeyStationManager extends KeyStationManager{
 			this.config.save();
 		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
-			getApp().getConsole().getLogger().severe("Unable to load MCD configuration file!");
+			logger.error("Unable to load MCD configuration file!");
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e1) {}
@@ -85,12 +90,12 @@ public class MCDKeyStationManager extends KeyStationManager{
 				if(ks.getConfig().equals(ksConfig)) {
 					return;
 				}else if(ks.getConfig().getID() == ksConfig.getID()) {
-					getApp().getConsole().getLogger().warning("Attempted to load KS with duplicate ID! " + ksConfig.getID());
+					logger.warn("Attempted to load KS with duplicate ID! " + ksConfig.getID());
 					return;
 				}
 			}
 			keyStations.add(ksFactory.new MCDKeyStation(ksConfig));
-			getApp().getConsole().getLogger().info("Loaded KS: " + ksConfig.getID());
+			logger.info("Loaded KS: " + ksConfig.getID());
 		}
 	}
 	

@@ -19,6 +19,9 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.t07m.application.Application;
 import com.t07m.console.Console;
 import com.t07m.console.NativeConsole;
@@ -32,6 +35,8 @@ import net.cubespace.Yamler.Config.YamlConfig;
 
 public class SynoTransactions extends Application{
 
+	private static Logger logger = LoggerFactory.getLogger(SynoTransactions.class);
+	
 	public static void main(String[] args) {
 		boolean gui = true;
 		if(args.length > 0) {
@@ -79,7 +84,7 @@ public class SynoTransactions extends Application{
 			cw.setVisible(true);
 			this.console = cw;
 		}else {
-			this.console = new NativeConsole("SynoTransactions") {
+			this.console = new NativeConsole() {
 				public void close() {
 					stop();
 				}
@@ -89,8 +94,8 @@ public class SynoTransactions extends Application{
 
 		String keyStationManagerClass = config.getKeyStationManagerClass();
 		if(keyStationManagerClass == null) {
-			this.console.getLogger().severe("No KeyStationManager Specified!");
-			this.console.getLogger().severe("Please specify the class for the KeyStationManager and restart the application.");
+			logger.error("No KeyStationManager Specified!");
+			logger.error("Please specify the class for the KeyStationManager and restart the application.");
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {}
@@ -103,7 +108,7 @@ public class SynoTransactions extends Application{
 				this.registerService(keyStationManager);
 			} catch (ClassNotFoundException | ClassCastException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
-				this.console.getLogger().severe("Unable to initiate specified KeyStationManager: " + e.getMessage());
+				logger.error("Unable to initiate specified KeyStationManager: " + e.getMessage());
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e2) {}
