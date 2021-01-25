@@ -17,6 +17,7 @@ package com.t07m.synotransactions.transaction;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +25,9 @@ import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
+@ToString
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public abstract class Transaction {
 
@@ -35,6 +38,7 @@ public abstract class Transaction {
 	private final @Getter Format format;
 	private final @Getter int timeStamp;
 	private final @Getter String deviceName;
+	private final @Getter String uUID = UUID.randomUUID().toString().split("-")[0].toUpperCase();
 	
 	private final @Getter(AccessLevel.PROTECTED) TransactionFactory transactionFactory;
 	

@@ -40,7 +40,7 @@ public class TransactionFactory {
 	}
 	
 	public CompletedTransaction submitTransaction(String[] data, Format format, String deviceName) {
-		return submitTransaction(data, format, (int)(System.currentTimeMillis()/1000), deviceName);
+		return submitTransaction(data, format, -1, deviceName);
 	}
 	
 	public CompletedTransaction submitTransaction(String[] data, Format format, int timestamp, String deviceName) {

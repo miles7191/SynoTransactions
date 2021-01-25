@@ -18,6 +18,9 @@ package com.t07m.synotransactions;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +29,7 @@ import com.t07m.application.Application;
 import com.t07m.console.Console;
 import com.t07m.console.NativeConsole;
 import com.t07m.swing.console.ConsoleWindow;
+import com.t07m.synotransactions.command.WhoAmICommand;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +40,9 @@ import net.cubespace.Yamler.Config.YamlConfig;
 public class SynoTransactions extends Application{
 
 	private static Logger logger = LoggerFactory.getLogger(SynoTransactions.class);
-	
+
+	private static String identity;
+
 	public static void main(String[] args) {
 		boolean gui = true;
 		if(args.length > 0) {
@@ -49,14 +55,10 @@ public class SynoTransactions extends Application{
 		new SynoTransactions(gui).start();
 	}
 
-	private final boolean gui;
-
-	private @Getter Console console;
-
 	private KeyStationManager keyStationManager;
 
 	public SynoTransactions(boolean gui) {
-		this.gui = gui;
+		super(gui, "Syno Transactions");
 	}
 
 	public void init() {		
@@ -72,26 +74,6 @@ public class SynoTransactions extends Application{
 			} catch (InterruptedException e1) {}
 			System.exit(-1);
 		}
-
-		if(this.gui) {
-			ConsoleWindow cw = new ConsoleWindow("SynoTransactions") {
-				public void close() {
-					stop();
-				}
-			};
-			cw.setup();
-			cw.setLocationRelativeTo(null);
-			cw.setVisible(true);
-			this.console = cw;
-		}else {
-			this.console = new NativeConsole() {
-				public void close() {
-					stop();
-				}
-			};
-			this.console.setup();
-		}
-
 		String keyStationManagerClass = config.getKeyStationManagerClass();
 		if(keyStationManagerClass == null) {
 			logger.error("No KeyStationManager Specified!");
@@ -102,10 +84,13 @@ public class SynoTransactions extends Application{
 			System.exit(-1);
 		}else {
 			try {
+				logger.info("Initializing SynoTransactions with identity: " + this.getIdentity());
+				logger.info("Constructing KSM: " + keyStationManagerClass);
 				Class<KeyStationManager> cls = (Class<KeyStationManager>) Class.forName(keyStationManagerClass);
 				Constructor<KeyStationManager> cons = cls.getConstructor(SynoTransactions.class);
 				keyStationManager = cons.newInstance(this);
 				this.registerService(keyStationManager);
+				this.getConsole().registerCommand(new WhoAmICommand(this));
 			} catch (ClassNotFoundException | ClassCastException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
 				logger.error("Unable to initiate specified KeyStationManager: " + e.getMessage());
@@ -115,6 +100,21 @@ public class SynoTransactions extends Application{
 				System.exit(-1);
 			}
 		}
+	}
+
+	public static String getIdentity() {
+		if(identity == null) {
+			try {
+				identity = InetAddress.getLocalHost().getHostName();
+			} catch (UnknownHostException e) {
+				identity = "";
+			}
+			if(identity.length() > 0) {
+				identity += "-";
+			}
+			identity += UUID.randomUUID().toString().split("-")[0].toUpperCase();
+		}
+		return identity;		
 	}
 
 	public class Config extends YamlConfig {

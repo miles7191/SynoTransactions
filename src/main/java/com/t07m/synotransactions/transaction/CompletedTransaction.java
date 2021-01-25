@@ -15,8 +15,18 @@
  */
 package com.t07m.synotransactions.transaction;
 
-public class CompletedTransaction extends Transaction{
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.t07m.synotransactions.SynoTransactions;
+
+import lombok.ToString;
+
+@ToString(callSuper = true)
+public class CompletedTransaction extends Transaction{
+	
+	private static Logger logger = LoggerFactory.getLogger(CompletedTransaction.class);
+	
 	private final String[] data;
 	
 	CompletedTransaction(String[] data, Format format, int timestamp, String deviceName, TransactionFactory factory) {
@@ -27,9 +37,8 @@ public class CompletedTransaction extends Transaction{
 	}
 
 	void process() {
-		if(!this.insertTransaction(getDeviceName(), getFormat() == Format.Json ? String.join("", data) : getFormat() == Format.String ? String.join("\n", data) : "", getFormat(), getTimeStamp())) {
+		if(!this.insertTransaction(getDeviceName(), getFormat() == Format.Json ? String.join("", data) : getFormat() == Format.String ? String.join("\n", data) + "\nSTID: " + SynoTransactions.getIdentity() + "\nUUID: " + getUUID(): "", getFormat(), getTimeStamp())) {
 			this.invokeThread();
-			//TODO: Log failed submiting transaction
 		}else {
 			submited = true;
 		}

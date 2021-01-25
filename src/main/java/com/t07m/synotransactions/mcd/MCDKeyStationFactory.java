@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.t07m.synotransactions.SynoTransactions;
 import com.t07m.synotransactions.mcd.MCDConfig.MCDKeyStationConfig;
+import com.t07m.synotransactions.transaction.CompletedTransaction;
 import com.t07m.synotransactions.transaction.Transaction.Format;
 import com.t07m.synotransactions.transaction.TransactionFactory;
 
@@ -55,10 +56,10 @@ public class MCDKeyStationFactory {
 				public void onNewBop(InputStream res) {
 					MCDTransaction trans = bopParser.parse(res);
 					if(trans != null) {
-						transactionFactory.submitTransaction(MCDReceiptFormatter.format(trans), Format.String, config.getSynologyDeviceName());
-						logger.info("KeyStation " + config.getID() + " submitted new transaction to " + config.getSynologyDeviceName() + ".");
+						CompletedTransaction completedTrans = transactionFactory.submitTransaction(MCDReceiptFormatter.format(trans), Format.String, config.getSynologyDeviceName());
+						logger.info("KeyStation " + config.getID() + " submitted " + completedTrans.getUUID() + " to " + config.getSynologyDeviceName() + ".");
 					}else {
-						logger.warn(config.getSynologyDeviceName() + " Unable to parse transaction!");
+						logger.error(config.getSynologyDeviceName() + " Unable to parse transaction!");
 					}
 				}
 			};

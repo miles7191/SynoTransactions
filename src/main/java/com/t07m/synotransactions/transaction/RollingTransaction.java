@@ -17,6 +17,8 @@ package com.t07m.synotransactions.transaction;
 
 import java.util.ArrayList;
 
+import com.t07m.synotransactions.SynoTransactions;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -75,6 +77,8 @@ public class RollingTransaction extends Transaction{
 	}
 
 	public void complete() {
+		append("STID: " + SynoTransactions.getIdentity());
+		append("UUID: " + getUUID());
 		completed = true;
 		this.invokeThread();
 	}
