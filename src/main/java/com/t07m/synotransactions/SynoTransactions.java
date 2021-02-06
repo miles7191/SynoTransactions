@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.t07m.application.Application;
 import com.t07m.console.Console;
 import com.t07m.console.NativeConsole;
-import com.t07m.swing.console.ConsoleWindow;
+import com.t07m.console.swing.ConsoleWindow;
 import com.t07m.synotransactions.command.WhoAmICommand;
 
 import lombok.Getter;
