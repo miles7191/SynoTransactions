@@ -26,9 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.t07m.application.Application;
-import com.t07m.console.Console;
-import com.t07m.console.NativeConsole;
-import com.t07m.console.swing.ConsoleWindow;
+import com.t07m.console.remote.server.RemoteServer;
 import com.t07m.synotransactions.command.WhoAmICommand;
 
 import lombok.Getter;
@@ -42,6 +40,8 @@ public class SynoTransactions extends Application{
 	private static Logger logger = LoggerFactory.getLogger(SynoTransactions.class);
 
 	private static String identity;
+	
+	private RemoteServer remoteConsole;
 
 	public static void main(String[] args) {
 		boolean gui = true;
@@ -84,6 +84,10 @@ public class SynoTransactions extends Application{
 			System.exit(-1);
 		}else {
 			try {
+				logger.info("Launching Application.");
+				remoteConsole = new RemoteServer(this.getConsole(), 13560);
+				remoteConsole.init();
+				remoteConsole.bind();
 				logger.info("Initializing SynoTransactions with identity: " + this.getIdentity());
 				logger.info("Constructing KSM: " + keyStationManagerClass);
 				Class<KeyStationManager> cls = (Class<KeyStationManager>) Class.forName(keyStationManagerClass);
@@ -129,4 +133,7 @@ public class SynoTransactions extends Application{
 
 	}
 
+	public void cleanup() {
+		remoteConsole.unbind();
+	}
 }
