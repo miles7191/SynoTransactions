@@ -38,7 +38,7 @@ import net.cubespace.Yamler.Config.YamlConfig;
 
 public class SynoTransactions extends Application{
 
-	public static final Version VERSION = Version.valueOf("1.0.0");
+	public static final Version VERSION = Version.valueOf("1.0.1");
 	public static final String GITHUB_REPO = "miles7191/SynoTransactions";
 	
 	private static Logger logger = LoggerFactory.getLogger(SynoTransactions.class);
