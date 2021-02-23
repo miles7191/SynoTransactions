@@ -18,8 +18,8 @@ package mcd;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.t07m.synotransactions.mcd.MCDConfig;
 import com.t07m.synotransactions.mcd.MCDConfig.MCDKeyStationConfig;
@@ -29,7 +29,7 @@ class SMBWatcherTest {
 
 	private static MCDKeyStationConfig ks;
 	
-	@BeforeAll
+	@Before
 	static void setUpBeforeClass() throws Exception {
 		ks = new MCDConfig().new MCDKeyStationConfig() {
 			public String getIP() {return System.getProperty("ksip");}
