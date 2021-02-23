@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.zafarkhaja.semver.Version;
 import com.t07m.application.Application;
 import com.t07m.console.remote.server.RemoteServer;
 import com.t07m.synotransactions.command.WhoAmICommand;
@@ -37,6 +38,9 @@ import net.cubespace.Yamler.Config.YamlConfig;
 
 public class SynoTransactions extends Application{
 
+	public static final Version VERSION = Version.valueOf("1.0.0");
+	public static final String GITHUB_REPO = "miles7191/SynoTransactions";
+	
 	private static Logger logger = LoggerFactory.getLogger(SynoTransactions.class);
 
 	private static String identity;
@@ -85,6 +89,14 @@ public class SynoTransactions extends Application{
 		}else {
 			try {
 				logger.info("Launching Application.");
+				if(config.isAutoUpdate()) {
+					this.initAutoUpdater(
+							GITHUB_REPO,
+							VERSION, 
+							config.getStartupScript(),
+							config.isUsePrereleases(),
+							config.getCronSchedule());
+				}
 				remoteConsole = new RemoteServer(this.getConsole(), 13560);
 				remoteConsole.init();
 				remoteConsole.bind();
@@ -125,6 +137,12 @@ public class SynoTransactions extends Application{
 
 		@Comment("Class path to KeyStationManager")
 		private @Getter @Setter String KeyStationManagerClass = "";
+		
+		@Comment("Auto Update Settings")
+		private @Getter @Setter boolean AutoUpdate = false;
+		private @Getter @Setter boolean UsePrereleases = false;
+		private @Getter @Setter String StartupScript = "";
+		private @Getter @Setter String CronSchedule = "0 0 2 * * *";
 
 		public Config() {
 			CONFIG_HEADER = new String[]{"SynoTransactions General Configuration Data"};

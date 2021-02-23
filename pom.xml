@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>com.t07m.application</groupId>
 			<artifactId>BaseApplication</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.t07m.encryption</groupId>
@@ -34,12 +34,12 @@
 		<dependency>
 			<groupId>com.t07m.config.yaml</groupId>
 			<artifactId>YamlConfiguration</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.t07m.synology.dsmclient</groupId>
 			<artifactId>Synology-DSMClient</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>com.t07m.remoteconsole</groupId>
 			<artifactId>RemoteConsole</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 </project>
