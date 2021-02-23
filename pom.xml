@@ -17,16 +17,6 @@
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.t07m.encryption</groupId>
-			<artifactId>Encryption</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.t07m.swing.console</groupId>
-			<artifactId>SwingConsole</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 			<version>1.26</version>
@@ -44,7 +34,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13</version>
+			<version>4.13.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codelibs</groupId>
